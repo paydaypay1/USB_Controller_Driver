@@ -15,21 +15,24 @@ from pynput import mouse
 
 CONFIG_FILE = os.path.expanduser("~/.controller_mapper.json")
 
+# TODO make for different vendors
 DEFAULT_MAPPINGS = {
-    "BTN_SOUTH": "space",
-    "BTN_EAST": "esc",
-    "BTN_WEST": "x",
-    "BTN_NORTH": "y",
-    "BTN_TL": "ctrl",
-    "BTN_TR": "shift",
-    "BTN_SELECT": "alt",
-    "BTN_START": "enter",
-    "BTN_THUMBL": "f1",
-    "BTN_THUMBR": "f2",
-    "DPAD_UP": "up",
-    "DPAD_DOWN": "down",
-    "DPAD_LEFT": "left",
-    "DPAD_RIGHT": "right",
+    "304": "space",          # BTN_SOUTH
+    "305": "esc",            # BTN_EAST
+    "307": "x",         # BTN_WEST
+    "308": "y",        # BTN_NORTH
+    "BTN_TL": "ctrl",        # BTN_TL
+    "BTN_TR": "shift",       # BTN_TR
+    "310": "shift",       # BTN_LBMP
+    "311": "shift",       # BTN_RBMP
+    "314": "alt",     # BTN_SELECT
+    "315": "enter",    # BTN_START
+    "317": "f1",      # BTN_THUMBL
+    "318": "f2",      # BTN_THUMBR
+    "DPAD_UP": "up",         # DPAD_UP
+    "DPAD_DOWN": "down",     # DPAD_DOWN
+    "DPAD_LEFT": "left",     # DPAD_LEFT
+    "DPAD_RIGHT": "right"   # DPAD_RIGHT
 }
 
 KEY_MAP = {
@@ -170,7 +173,7 @@ class ControllerMapper:
 
     def build_gui(self):
         self.root.title("USB Controller Mapper")
-        self.root.geometry("980x950")
+        self.root.geometry("480x950")
         self.root.minsize(820, 820)
 
         main = ttk.Frame(self.root, padding=15)
@@ -320,7 +323,6 @@ class ControllerMapper:
 
         controls = ttk.Frame(main)
         controls.pack(fill="x", pady=10)
-
         ttk.Button(
             controls, text="Save", command=self.save_mappings
         ).pack(side="left", padx=3)
@@ -328,6 +330,7 @@ class ControllerMapper:
         ttk.Button(
             controls, text="Load", command=self.load_into_gui
         ).pack(side="left", padx=3)
+
 
         ttk.Button(
             controls, text="Start", command=self.start
@@ -544,10 +547,12 @@ class ControllerMapper:
             code_name = code_name[0]
 
         if event.value not in (0, 1, 2):
+            self.ui_log(f"Invalid event value")
             return
 
         action = self.mappings.get(code_name, "").strip()
         if not action:
+            self.ui_log(f"Detected input. (No mapping found for: {code_name})")
             return
 
         # Preserve press/release for mouse buttons.
@@ -883,8 +888,10 @@ class ControllerMapper:
             with open(CONFIG_FILE, "w", encoding="utf-8") as f:
                 json.dump(data, f, indent=2)
 
+            self.stop
             self.set_status(f"Saved {CONFIG_FILE}")
             self.append_log(f"Saved mappings to {CONFIG_FILE}")
+            self.start
 
         except Exception as exc:
             self.set_status(f"Save failed: {exc}")
@@ -903,7 +910,8 @@ class ControllerMapper:
 
             return data.get("mappings", DEFAULT_MAPPINGS.copy())
 
-        except Exception:
+        except Exception as exc:
+            self.ui_log(exc)
             return DEFAULT_MAPPINGS.copy()
 
     def load_into_gui(self):
@@ -958,6 +966,7 @@ class ControllerMapper:
 
     def set_status(self, text):
         if not self.closing:
+            self.ui_log(text)
             self.status_var.set(text)
 
     def ui_status(self, text):
