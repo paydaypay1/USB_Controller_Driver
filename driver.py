@@ -4,16 +4,19 @@ import json
 import os
 import threading
 import time
+
 import tkinter as tk
+from tkinter import filedialog
 from tkinter import ttk, messagebox
 
 import evdev
 from evdev import ecodes
+
 from pynput import keyboard
 from pynput import mouse
 
 
-CONFIG_FILE = os.path.expanduser("~/.controller_mapper.json")
+CONFIG_FILE = os.path.expanduser("~/controller_mapper.json")
 
 # TODO make for different vendors
 DEFAULT_MAPPINGS = {
@@ -124,10 +127,11 @@ class ControllerMapper:
         self.keyboard = keyboard.Controller()
         self.mouse = mouse.Controller()
 
+        self.config_dir = CONFIG_FILE
         self.mappings = self.load_mappings()
 
-        self.mouse_speed = tk.IntVar(value=15)
-        self.deadzone = tk.IntVar(value=8000)
+        self.mouse_speed = tk.IntVar(value=28)
+        self.deadzone = tk.IntVar(value=13000)
         self.mouse_stick = tk.StringVar(value="right")
 
         self.device_var = tk.StringVar()
@@ -173,8 +177,8 @@ class ControllerMapper:
 
     def build_gui(self):
         self.root.title("USB Controller Mapper")
-        self.root.geometry("480x950")
-        self.root.minsize(820, 820)
+        self.root.geometry("640x960")
+        self.root.minsize(640, 960)
 
         main = ttk.Frame(self.root, padding=15)
         main.pack(fill="both", expand=True)
@@ -316,11 +320,6 @@ class ControllerMapper:
             textvariable=self.deadzone, width=8
         ).grid(row=0, column=5, padx=8, sticky="w")
 
-        ttk.Label(
-            mouse_frame,
-            text="Mouse actions can be selected per button above.",
-        ).grid(row=1, column=0, columnspan=6, sticky="w", pady=(8, 0))
-
         controls = ttk.Frame(main)
         controls.pack(fill="x", pady=10)
         ttk.Button(
@@ -331,6 +330,9 @@ class ControllerMapper:
             controls, text="Load", command=self.load_into_gui
         ).pack(side="left", padx=3)
 
+        # ttk.Button(
+        #     controls, text="Select Mapping", command=self.select_file
+        # ).pack(side="left", padx=3)
 
         ttk.Button(
             controls, text="Start", command=self.start
@@ -338,6 +340,10 @@ class ControllerMapper:
 
         ttk.Button(
             controls, text="Stop", command=self.stop
+        ).pack(side="left", padx=3)
+
+        ttk.Button(
+            controls, text="Exit", command=self.quit
         ).pack(side="left", padx=3)
 
         ttk.Button(
@@ -957,12 +963,28 @@ class ControllerMapper:
     # Helpers
     # ---------------------------------------------------------
 
+    def select_file(self):
+        file_types = [
+            ('JSON Files', '*.json'),
+            ('All Files', '*.*')
+        ]
+        file_path = filedialog.askopenfilename(
+            title='Select a Mapping File',
+            filetypes=file_types
+        )
+        if file_path:
+            self.config_dir = file_path
+            print(f"Selected map file: {file_path}")
+
     def test_mouse(self):
         self.mouse.move(20, 0)
         time.sleep(0.03)
         self.mouse.move(-20, 0)
         self.mouse.click(mouse.Button.left)
         self.append_log("Mouse test passed")
+
+    def quit(self):
+        exit(0)
 
     def set_status(self, text):
         if not self.closing:
