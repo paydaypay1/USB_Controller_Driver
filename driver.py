@@ -336,7 +336,7 @@ class ControllerMapper:
 
         ttk.Button(
             controls, text="Start", command=self.start
-        ).pack(side="left", padx=15)
+        ).pack(side="left", padx=3)
 
         ttk.Button(
             controls, text="Stop", command=self.stop
@@ -582,7 +582,7 @@ class ControllerMapper:
 
     def normalize_axis(self, code, value):
         axis_min, axis_max, flat = self.axis_ranges.get(
-            code, (-32768, 32767, 0)
+            code, (22000, 22000, 0) # -32768, 32767
         )
 
         center = (axis_min + axis_max) / 2.0
@@ -603,7 +603,7 @@ class ControllerMapper:
 
         magnitude = (
             abs(normalized) - deadzone
-        ) / max(1.0 - deadzone, 0.001)
+        ) / max(1.0 - deadzone, 0.00005)
 
         magnitude = max(0.0, min(1.0, magnitude))
 
