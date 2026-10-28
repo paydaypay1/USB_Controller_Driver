@@ -1,0 +1,42 @@
+{
+  "presets": {
+    "StandardDefault": {
+      "South / A": "mouse:left",
+      "East / B": "mouse:right",
+      "West / X": "",
+      "North / Y": "hotkey:alt+tab",
+      "Left shoulder": "backspace",
+      "Right shoulder": "delete",
+      "Left trigger button": "",
+      "Right trigger button": "",
+      "Select / Back": "hotkey:ctrl+c",
+      "Start": "ctrl+v",
+      "Left stick click": "enter",
+      "Right stick click": "hotkey:alt+f4",
+      "D-pad up": "up",
+      "D-pad down": "down",
+      "D-pad left": "left",
+      "D-pad right": "right",
+      "Shmenxs-B\u00f6x Button": ""
+    },
+    "Speech": {
+      "South / A": "command:speak \"Ahh\"",
+      "East / B": "command:speak \"$(uptime)\"",
+      "West / X": "command:speak \"Eeee\"",
+      "North / Y": "command:speak \"Uhhh\"",
+      "Left shoulder": "command:speak \"No\"",
+      "Right shoulder": "command:speak \"Yes\"",
+      "Left trigger button": "",
+      "Right trigger button": "",
+      "Select / Back": "",
+      "Start": "",
+      "Left stick click": "",
+      "Right stick click": "",
+      "D-pad up": "command:speak \"Idea\"",
+      "D-pad down": "command:speak \"Phrase of Words\"",
+      "D-pad left": "command:speak \"word\"",
+      "D-pad right": "command:speak \"Concept\"",
+      "Shmenxs-B\u00f6x Button": "command:speak \"$(date)\""
+    }
+  }
+}
